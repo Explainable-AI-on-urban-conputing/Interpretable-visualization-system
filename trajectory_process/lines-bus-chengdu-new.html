@@ -80,20 +80,19 @@ under the License.
     }
     function mapData(data_gps,data_grid,time,echarts,grid_pos){
         var results=[];
-        var hStep=15;
+        data_grad=JSON.parse(data_grid);
+        var hStep=30;
         var cnt=0;
         //var ams=timeInterpret(time);
-        var base_grad=data_grid[time];
-
-        for(var x in data_grid){
-            console.log(x);
-        }
+        var base_grad=data_grad[time];
+        console.log(base_grad);
         var base_gps=data_gps[time];
         //console.log(base_gps.length);
         for(var num=0;num<base_gps.length;num++){
             //console.log(num);
             var flag=0;
             var result=[];
+            var now_weight=base_grad[(''+num)][num];
             for(var tup in base_gps[num]){
                 var now_tup=base_gps[num][tup];
                 for (var lst in now_tup){
@@ -112,19 +111,20 @@ under the License.
 
             if(flag==0|| result.length<=1) continue;
             cnt+=1;
+            var color_neural=echarts.color.modifyHSL("#2eed2b");
             //console.log(result);
             results.push({
                 coords: result,
                 lineStyle: {
                     normal: {
                         //color:'#5A94DF5A'
-                        color: echarts.color.modifyHSL('#5A94DF', Math.round(hStep * cnt))
+                        color: echarts.color.modifyHSL(color_neural,Math.round(hStep * (1+10*now_weight)))
                     },
                     effect: {
                         constantSpeed: 30,
                         show: true,
-                        trailLength: 0.1,
-                        symbolSize: 1.5
+                        trailLength: 1,
+                        symbolSize: 1+20*(1+Math.abs(now_weight))
                     }
                 }
             });
