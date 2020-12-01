@@ -77,13 +77,14 @@ under the License.
         ans+=day.getSeconds();
         return ans;
     }
-    function mapData(data,time){
+    function mapData(data,time,echarts,grid_pos){
         var results=[];
-        var hStep=10;
+        var hStep=15;
         var cnt=0;
         for(var key in data){
             var tup=data[key];
             //console.log(tup);
+            var flag=0;
             var result=[]
             // finish the combine of trajectory
             for(var i=-2;i<=2;i++){
@@ -98,22 +99,30 @@ under the License.
                         for(var key1 in tup[ams]){
                             //console.log(typeof key1);
                             result.push(tup[ams][key1]);
+                            var now_pos=tup[ams][key1];
+                            //console.log(now_pos);
+                            if(flag==0&&now_pos[0]-grid_pos[2]>=0&&now_pos[0]-grid_pos[3]<0
+                            && now_pos[1]-grid_pos[0]>=0&&now_pos[1]-grid_pos[1]<0){
+                                flag=1;
+                            }
                         }
                     }
                 }
             }
+            if(result.length<=2|| flag==0) continue;
             cnt+=1;
-            if(result.length==0) continue;
+            console.log(cnt);
             results.push({
                 coords: result,
                 lineStyle: {
                     normal: {
-                        color:(10,10,10,0.3)
-                        //color: echarts.color.modifyHSL('#5A94DF' ,Math.round(hStep * cnt))
+                        //color:'#5A94DF5A'
+                        color: echarts.color.modifyHSL('#5A94DF', Math.round(hStep * cnt))
                     }
                 }
             });
         }
+
         return results;
     }
     require([
@@ -135,66 +144,16 @@ under the License.
                 (lngExtent[1] - lngExtent[0]) / cellCount[0],
                 (latExtent[1] - latExtent[0]) / cellCount[1]
             ];
+            var tar_grid=[16,16]
+            var grid_check=[
+                lngExtent[0]+cellSizeCoord[0]*tar_grid[0],
+                lngExtent[0]+cellSizeCoord[0]*(tar_grid[0]+1),
+                latExtent[0]+cellSizeCoord[1]*tar_grid[1],
+                latExtent[0]+cellSizeCoord[1]*(tar_grid[1]+1)
+            ]
             var time=new Date(2016,11,1,10,0,0);
-            var busLines=mapData(data,time);
-            /*
-            var hStep = 15;
-            var busLines = data.map(function (busLine, idx) {
-                //console.log("busline is "+busLine);
-                //console.log("idx is"+idx);
-                var cnt=0;
-                var prevPt;
-                var points = [];
-                var mapps=[];
-                for (var i = 0; i < busLine.length; i += 2) {
-                    var pt = [busLine[i], busLine[i + 1]];
-                    if (i > 0) {
-                        pt = [
-                            prevPt[0] + pt[0],
-                            prevPt[1] + pt[1]
-                        ];
-                    }
-                    prevPt = pt;
-                    var nowPt=[pt[0] / 1e4, pt[1] / 1e4];
-                    var ans=checkPos(nowPt,[(latExtent[0]+latExtent[1])/2,(lngExtent[0]+lngExtent[1])/2],cellSizeCoord);
-                    var visFlag=0;
-                    for(var j=0;j<mapps.length;j++){
-                        if(mapps[j][0]==ans[0]&&mapps[j][1]==ans[1]){
-                            visFlag=1;
-                            break;
-                        }
-                    }
-                    //console.log(" "+ans[0]+" "+ans[1]);
-                    if(ans[0]<10&& ans[1]<10 && visFlag==0){
-                        mapps.push(ans);
-                        cnt+=1;
-                    }
-                    points.push(nowPt);
-                }
-                if(cnt!=0) cc+=1;
-                if(cnt==0){
-                    return {
-                        coords: points,
-                        lineStyle: {
-                            normal: {
-                                color: '#5A94DF00'
-                            }
-                        }
-                    };
-                }
-                return {
-                    coords: points,
-                    lineStyle: {
-                        normal: {
-                            color: echarts.color.modifyHSL('#5A94DF', Math.round(hStep * cnt))
-                        }
-                    }
-                };
-            });
-             */
-            //console.log(busLines.length);
-            // busLines = busLines.slice(0, 100);
-            //console.log(busLines);
+            var busLines=mapData(data,time,echarts,grid_check);
+
             myChart.setOption({
                 animation: false,
                 bmap: {
@@ -352,9 +311,9 @@ under the License.
                         }
                     },
                     effect: {
-                        constantSpeed: 1,
+                        constantSpeed: 30,
                         show: true,
-                        trailLength: 0.4,
+                        trailLength: 0.1,
                         symbolSize: 1.5
                     },
                     zlevel: 1
