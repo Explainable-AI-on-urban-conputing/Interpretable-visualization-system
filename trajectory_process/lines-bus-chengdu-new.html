@@ -7,9 +7,7 @@ regarding copyright ownership.  The ASF licenses this file
 to you under the Apache License, Version 2.0 (the
 "License"); you may not use this file except in compliance
 with the License.  You may obtain a copy of the License at
-
    http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing,
 software distributed under the License is distributed on an
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -80,6 +78,7 @@ under the License.
     }
     function mapData(data_gps,data_grid,time,echarts,grid_pos){
         var results=[];
+        var resulta=[];
         data_grad=JSON.parse(data_grid);
         var hStep=30;
         var cnt=0;
@@ -112,24 +111,28 @@ under the License.
             if(flag==0|| result.length<=1) continue;
             cnt+=1;
             var color_neural=echarts.color.modifyHSL("#2eed2b");
-            //console.log(result);
+            console.log(now_weight);
             results.push({
                 coords: result,
                 lineStyle: {
                     normal: {
                         //color:'#5A94DF5A'
-                        color: echarts.color.modifyHSL(color_neural,Math.round(hStep * (1+10*now_weight)))
-                    },
-                    effect: {
-                        constantSpeed: 30,
-                        show: true,
-                        trailLength: 1,
-                        symbolSize: 1+20*(1+Math.abs(now_weight))
+                        color: echarts.color.modifyHSL(color_neural)
                     }
+                    /*
+                },
+                effect: {
+                    constantSpeed: 30,
+                    show: true,
+                    trailLength: 1,
+                    symbolSize: 1+20*(1+Math.abs(now_weight))
+
+                     */
                 }
             });
+            resulta.push(Math.abs(0.1+now_weight*500));
         }
-        return results;
+        return [results,resulta];
     }
     require([
         'echarts',
@@ -168,8 +171,10 @@ under the License.
                             latExtent[0]+cellSizeCoord[1]*tar_grid[1],
                             latExtent[0]+cellSizeCoord[1]*(tar_grid[1]+1)
                         ]
-                        var busLines=mapData(data1,data2,nowtime,echarts,grid_check);
-                        //console.log(busLines);
+                        var tup=mapData(data1,data2,nowtime,echarts,grid_check);
+                        var busLines=tup[0];
+                        var col=tup[1];
+                        console.log(col);
                         myChart.setOption({
                             animation: false,
                             bmap: {
@@ -326,220 +331,29 @@ under the License.
                                         width: 0
                                     }
                                 },
-                                /*
                                 effect: {
                                     constantSpeed: 30,
                                     show: true,
                                     trailLength: 0.1,
-                                    symbolSize: 1.5
+                                    symbolSize: col
                                 },
-
-                                 */
                                 zlevel: 1
                             }]
                         });
                     }
                 })
 
-                }
-            })
+            }
         })
-        // $.get(['data/day_gps.json','data/day_grad.json'], function (data) {
-        //     var lngExtent = [30.657470467968622, 30.73338548285496];
-        //     var latExtent = [104.0385528416383, 104.1284721861233];
-        //     var cellCount = [38 ,36];
-        //     var cellSizeCoord = [
-        //         (lngExtent[1] - lngExtent[0]) / cellCount[0],
-        //         (latExtent[1] - latExtent[0]) / cellCount[1]
-        //     ];
-        //     var tar_grid=[16,16]
-        //     var grid_check=[
-        //         lngExtent[0]+cellSizeCoord[0]*tar_grid[0],
-        //         lngExtent[0]+cellSizeCoord[0]*(tar_grid[0]+1),
-        //         latExtent[0]+cellSizeCoord[1]*tar_grid[1],
-        //         latExtent[0]+cellSizeCoord[1]*(tar_grid[1]+1)
-        //     ]
-        //     var data_gps=data[0];
-        //     var data_grad=data[1];
-        //     console.log(data_grad);
-        //     var time=2;
-        //     var busLines=mapData(data_gps,data_grad,time,echarts,grid_check);
-        //
-        //     myChart.setOption({
-        //         animation: false,
-        //         bmap: {
-        //             center: [104.097, 30.695],
-        //             zoom: 10,
-        //             roam: true,
-        //             mapStyle: {
-        //                 'styleJson': [
-        //                     {
-        //                         'featureType': 'water',
-        //                         'elementType': 'all',
-        //                         'stylers': {
-        //                             'color': '#031628'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'land',
-        //                         'elementType': 'geometry',
-        //                         'stylers': {
-        //                             'color': '#000102'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'highway',
-        //                         'elementType': 'all',
-        //                         'stylers': {
-        //                             'visibility': 'off'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'arterial',
-        //                         'elementType': 'geometry.fill',
-        //                         'stylers': {
-        //                             'color': '#000000'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'arterial',
-        //                         'elementType': 'geometry.stroke',
-        //                         'stylers': {
-        //                             'color': '#0b3d51'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'local',
-        //                         'elementType': 'geometry',
-        //                         'stylers': {
-        //                             'color': '#000000'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'railway',
-        //                         'elementType': 'geometry.fill',
-        //                         'stylers': {
-        //                             'color': '#000000'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'railway',
-        //                         'elementType': 'geometry.stroke',
-        //                         'stylers': {
-        //                             'color': '#08304b'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'subway',
-        //                         'elementType': 'geometry',
-        //                         'stylers': {
-        //                             'lightness': -70
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'building',
-        //                         'elementType': 'geometry.fill',
-        //                         'stylers': {
-        //                             'color': '#000000'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'all',
-        //                         'elementType': 'labels.text.fill',
-        //                         'stylers': {
-        //                             'color': '#857f7f'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'all',
-        //                         'elementType': 'labels.text.stroke',
-        //                         'stylers': {
-        //                             'color': '#000000'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'building',
-        //                         'elementType': 'geometry',
-        //                         'stylers': {
-        //                             'color': '#022338'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'green',
-        //                         'elementType': 'geometry',
-        //                         'stylers': {
-        //                             'color': '#062032'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'boundary',
-        //                         'elementType': 'all',
-        //                         'stylers': {
-        //                             'color': '#465b6c'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'manmade',
-        //                         'elementType': 'all',
-        //                         'stylers': {
-        //                             'color': '#022338'
-        //                         }
-        //                     },
-        //                     {
-        //                         'featureType': 'label',
-        //                         'elementType': 'all',
-        //                         'stylers': {
-        //                             'visibility': 'off'
-        //                         }
-        //                     }
-        //                 ]
-        //             }
-        //         },
-        //         series: [{
-        //             type: 'lines',
-        //             coordinateSystem: 'bmap',
-        //             polyline: true,
-        //             data: busLines,
-        //             silent: true,
-        //             lineStyle: {
-        //                 normal: {
-        //                     // color: '#c23531',
-        //                     // color: 'rgb(200, 35, 45)',
-        //                     opacity: 0.2,
-        //                     width: 1
-        //                 }
-        //             },
-        //             progressiveThreshold: 500,
-        //             progressive: 200
-        //         }, {
-        //             type: 'lines',
-        //             coordinateSystem: 'bmap',
-        //             polyline: true,
-        //             data: busLines,
-        //             lineStyle: {
-        //                 normal: {
-        //                     width: 0
-        //                 }
-        //             },
-        //             effect: {
-        //                 constantSpeed: 30,
-        //                 show: true,
-        //                 trailLength: 0.1,
-        //                 symbolSize: 1.5
-        //             },
-        //             zlevel: 1
-        //         }]
-        //     });
-        //
-        // });
+    })
 
-        document.getElementById('clear').addEventListener('click', function() {
-            myChart.setOption({
-                series: [{
-                    data: []
-                }]
-            });
+    document.getElementById('clear').addEventListener('click', function() {
+        myChart.setOption({
+            series: [{
+                data: []
+            }]
         });
+    });
 </script>
 </body>
 </html>
