@@ -110,14 +110,20 @@ under the License.
 
             if(flag==0|| result.length<=1) continue;
             cnt+=1;
-            var color_neural=echarts.color.modifyHSL("#2eed2b");
-            console.log(now_weight);
+            var color_neural=echarts.color.modifyHSL("#dd02fa");
+            var color_negative=echarts.color.modifyHSL("#1b02fa");
+            var color_positive=echarts.color.modifyHSL("#e00753");
+            var now_color;
+            if(now_weight<0.001&& now_weight>-0.001) now_color=color_neural;
+            else if(now_weight>=0.001) now_color=color_positive;
+            else now_color=color_negative;
             results.push({
                 coords: result,
                 lineStyle: {
                     normal: {
                         //color:'#5A94DF5A'
-                        color: echarts.color.modifyHSL(color_neural)
+                        color: now_color,
+                        width: 0.1+300*Math.abs(now_weight)
                     }
                     /*
                 },
