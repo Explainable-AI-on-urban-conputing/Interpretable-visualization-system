@@ -1,1 +1,3 @@
 # Trajectory module
+
+The target of this module is to display the grid related trajectories and can show importance of each trajectory. When a click event is called in the control module, the time and the correspond grid number are sent to this module, this module would find the correspond trajectories and display them on the map. The color of the trajectory is depends on the the influence of the trajectory. If the influence is positive, the correspond color is red. If the influence is negative, the correspond color is blue. The width of the trajectory represents the importance of this trajectory.
