@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+   <head>
+       <meta charset="utf-8">
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl@1/dist/echarts-gl.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat@1/dist/ecStat.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/extension/dataTool.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/map/js/china.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/map/js/world.js"></script>
+<!--       <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=xfhhaTThl11qYVrqLZii6w8qE5ggnhrY&__ec_v__=20190126"></script>-->
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/extension/bmap.min.js"></script>
+       <meta name="viewport" content="width=device-width, initial-scale=1" />
+<!--       <script src="lib/esl.js"></script>-->
+<!--       <script src="lib/config.js"></script>-->
+<!--       <script src="lib/testHelper.js"></script>-->
+       <script src="{{url_for('static',filename='js/jquery.min.js')}}"></script>
+       <script src="http://api.map.baidu.com/api?v=2.0&ak=KOmVjPVUAey1G2E8zNhPiuQ6QiEmAwZu"></script>
+       <link rel="stylesheet" href="{{ url_for('static',filename='css/reset.css') }}" />
+   </head>
+   <body>
+   <style>
+       h1 {
+           line-height: 60px;
+           height: 60px;
+           background: #ddd;
+           text-align: center;
+           font-weight: bold;
+           font-size: 14px;
+       }
+       #grid {
+           height: 100%;
+       }
+       #pens {
+           position: fixed;
+           right: 40%;
+           top: 20%;
+           z-index: 9999999;
+           border: 1px solid #aaa;
+           text-align: center;
+       }
+       #pens div {
+           width: 30px;
+           height: 10px;
+           cursor: pointer;
+       }
+       #con1{
+           height:18% ;
+           float: top;
+           border: 1px solid #111111;
+       }
+       #con2{
+           height:81% ;
+           float: bottom;
+           border: 1px solid #111111;
+       }
+       .leftbox{
+           height: 100%;
+           width: 20%;
+           float: left;
+           border: 1px solid #111111;
+       }
+       .middlebox{
+           height: 100%;
+           width: 40%;
+           float: left;
+           border: 1px solid #111111;
+       }
+       .rightbox{
+           height: 100%;
+           width: 39%;
+           float: left;
+           border: 1px solid #111111;
+       }
+       .topbox{
+           height:20%
+       }
+       .BMap_cpyCtrl {
+           display: none;
+       }
+       .anchorBL {
+           display: none;
+       }
+   </style>
+   <div class="container" id="con1">
+       <div class="leftbox" id="left1" >
+           <input type="range" min="0" max="720" value="80" id="time"/>
+           <input type="text" id="txt" value="80" size="10"/>
+       </div>
+       <div class="middlebox" id="mid1" style="width:79%;height: 100%;float: left" >
+       </div>
+{##}
+{#       <div class="rightbox" id="right1" ></div>#}
+   </div>
+   <div class="container" id="con2">
+       <div class="leftbox" id="left2" ></div>
+       <div class="middlebox" id="mid2" style="width:60%;height: 100%;float: left" >
+           <div class="controlbox" id="contr1" style="width:10%;height: 100%;float: left"></div>
+           <div class="chart" id="grid" style="width: 78%;float: left"></div>
+           <div class="controlbox" id="contr2" style="width:10%;height: 100%;float: left"></div>
+       </div>
+       <div class="rightbox" id="right2" style="width:19%;height: 100%;float: left"></div>
+   </div>
+
+   <script>
+       var myStyleJson=[{
+           "featureType": "background",
+           "elementType": "geometry",
+           "stylers": {
+               "color":"#36213e"
+           }
+       },{
+           "featureType": "water",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "manmade",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "education",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "medical",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "scenicspots",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "transportation",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "road",
+           "elementType": "geometry",
+           "stylers": {
+               "visibility": "on"
+           }
+       },{
+           "featureType": "road",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "road",
+           "elementType": "geometry.fill",
+           "stylers": {
+               "color": "#8ac6d0ff"
+           }
+       },{
+           "featureType": "road",
+           "elementType": "geometry.stroke",
+           "stylers": {
+               "color": "#164d58ff"
+           }
+       },{
+           "featureType": "poilabel",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "highway",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "nationalway",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "provincialway",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "cityhighway",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "arterial",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "tertiaryway",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "poilabel",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "arterial",
+           "elementType": "labels.icon",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "tertiaryway",
+           "elementType": "labels.icon",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "fourlevelway",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "fourlevelway",
+           "elementType": "labels.icon",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "local",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "local",
+           "elementType": "labels.icon",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "subway",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "subway",
+           "elementType": "labels.icon",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "highwaysign",
+           "elementType": "labels.icon",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "highwaysign",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "nationalwaysign",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "nationalwaysign",
+           "elementType": "labels.icon",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "provincialwaysign",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "provincialwaysign",
+           "elementType": "labels.icon",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "tertiarywaysign",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "tertiarywaysign",
+           "elementType": "labels.icon",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "subwaylabel",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "subwaylabel",
+           "elementType": "labels.icon",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "roadarrow",
+           "elementType": "labels.icon",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "continent",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "on"
+           }
+       },{
+           "featureType": "country",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "on"
+           }
+       },{
+           "featureType": "city",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "on"
+           }
+       },{
+           "featureType": "district",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "town",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "town",
+           "elementType": "labels.icon",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "village",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       },{
+           "featureType": "districtlabel",
+           "elementType": "labels",
+           "stylers": {
+               "visibility": "off"
+           }
+       }];
+        var dom = document.getElementById("grid");
+        var myChart = echarts.init(dom);
+        var COLORS = ["#070093", "#1c3fbf", "#1482e5", "#70b4eb", "#b4e0f3", "#ffffff"];
+        var lnglength=36;
+        var latlength=38;
+        var mapcenter=[104.095, 30.695];  //地图中心
+        var lngExtent = [104.048,104.138]; //数据范围——经度
+        var latExtent = [30.662,30.738];  //数据范围——维度
+        var cellCount = [36, 38];
+        var cellSizeCoord = [
+            (lngExtent[1] - lngExtent[0]) / cellCount[0],
+            (latExtent[1] - latExtent[0]) / cellCount[1]
+        ];
+
+        function renderItem(params, api) {
+            var context = params.context;
+            var lngIndex = api.value(0);
+            var latIndex = api.value(1);
+            var coordLeftTop = [
+                +(latExtent[0] + lngIndex * cellSizeCoord[0]).toFixed(6),
+                +(lngExtent[0] + latIndex * cellSizeCoord[1]).toFixed(6)
+            ];
+            var pointLeftTop = getCoord(params, api, lngIndex, latIndex);
+            var pointRightBottom = getCoord(params, api, lngIndex + 1, latIndex + 1);
+
+            return {
+                type: 'rect',
+                shape: {
+                    x: pointLeftTop[0],
+                    y: pointLeftTop[1],
+                    width: pointRightBottom[0] - pointLeftTop[0],
+                    height: pointRightBottom[1] - pointLeftTop[1]
+                },
+                style: api.style({
+                    stroke: 'rgba(0,0,0,0.1)'
+                }),
+                styleEmphasis: api.styleEmphasis()
+            };
+        }
+
+        function getCoord(params, api, lngIndex, latIndex) {
+            var coords = params.context.coords || (params.context.coords = []); //如果有就返回，没有就创建一个
+            var key = lngIndex + '-' + latIndex;
+
+            // bmap returns point in integer, which makes cell width unstable.
+            // So we have to use right bottom point.
+            return coords[key] || (coords[key] = api.coord([
+                +(lngExtent[0] + lngIndex * cellSizeCoord[0]).toFixed(6),
+                +(latExtent[0] + latIndex * cellSizeCoord[1]).toFixed(6)
+            ]));
+        }
+
+   </script>
+   <script>
+       $.ajax({
+           type:"get", //使用get方式
+           url: "{{url_for('static',filename='data/Chengdu_data.json')}}", //json文件相对于这个HTML的路径
+           dataType:"json",
+           success:function(json) {
+               var timespot=document.getElementById("time").value;
+               var t=document.getElementById("txt");
+               t.value=timespot;
+               var datamax=0;
+               var jsondata=[];
+               var count=0;
+               for(var j =0;j<latlength;j++){
+                   for(var i=0;i<lnglength;i++){
+                       jsondata.push([i,j,json[timespot][count]]);
+                       count++;
+                   }
+               }
+               for (var i=0;i<json[timespot].length;i++){
+                   temp=json[timespot][i];
+                   if (datamax < temp){
+                       datamax=temp;
+                   }
+               }
+               var gapSize = 0;
+               var data=jsondata;
+               data.sort(function (a, b) {  //看距离大小
+
+                   var dist0 = (a[0] - 18) * (a[0] - 18) + (a[1] - 19) * (a[1] - 19);
+                   var dist1 = (b[0] - 18) * (b[0] - 18) + (b[1] - 19) * (b[1] - 19);
+
+                   return dist0 - dist1;
+               });
+               option = {
+                   tooltip: {},
+                   visualMap: {
+                       type: 'piecewise',
+                       inverse: true,
+                       top: -200,
+                       left: -200,
+                       min:0,
+                       max:datamax,
+                       borderColor: '#aaa',
+                       borderWidth: 2,
+                       backgroundColor: '#eee',
+                       dimension: 2,
+                       inRange: {
+                           color: [
+                               '#171c61', '#4301fa', '#b901fd'
+                           ],
+                           opacity: 0.7
+                       }
+                   },
+                   series: [
+                       {
+                           type: 'custom',
+                           coordinateSystem: 'bmap',
+                           renderItem: renderItem,
+                           animation: false,
+                           itemStyle: {
+                               emphasis: {
+                                   color: 'yellow'
+                               }
+                           },
+                           encode: {
+                               tooltip: 2
+                           },
+                           data: data,
+                           progressiveThreshold: 1000
+                       }
+                   ],
+                   bmap: {
+                       center: mapcenter,
+                       zoom: 14,
+                       roam: false,
+                       mapStyle: {
+                       }
+                   }
+               };
+                   myChart.setOption(option, true);
+                   var bmap = myChart.getModel().getComponent('bmap').getBMap();
+                   bmap.setMapStyle({styleJson: myStyleJson ,});
+           },
+           error:function(){
+               alert("请求失败");
+           }
+       });
+   </script>
+   <script>
+       $("#time").on('input propertychange', () => {
+
+           $.ajax({
+               type:"get", //使用get方式
+               url: "{{url_for('static',filename='data/Chengdu_data.json')}}", //json文件相对于这个HTML的路径
+               dataType:"json",
+               success:function(json) {
+                   var timespot=document.getElementById("time").value;
+                   var t=document.getElementById("txt");
+                   t.value=timespot;
+                   var datamax=0;
+                   var jsondata=[];
+                   var count=0;
+                   for(var j =0;j<latlength;j++){
+                       for(var i=0;i<lnglength;i++){
+                           jsondata.push([i,j,json[timespot][count],count]);
+                           count++;
+                       }
+                   }
+                   for (var i=0;i<json[timespot].length;i++){
+                       temp=json[timespot][i];
+                       if (datamax < temp){
+                           datamax=temp;
+                       }
+                   }
+
+
+                       var gapSize = 0;
+                       var data=jsondata;
+                       data.sort(function (a, b) {  //看距离大小
+
+                           var dist0 = (a[0] - 18) * (a[0] - 18) + (a[1] - 19) * (a[1] - 19);
+                           var dist1 = (b[0] - 18) * (b[0] - 18) + (b[1] - 19) * (b[1] - 19);
+
+                           return dist0 - dist1;
+                       });
+
+                       option = {
+                           tooltip: {},
+                           visualMap: {
+                               type: 'piecewise',
+                               inverse: true,
+                               top: -200,
+                               left: -200,
+                               min:0,
+                               max:datamax,
+                               borderColor: '#aaa',
+                               borderWidth: 2,
+                               backgroundColor: '#eee',
+                               dimension: 2,
+                               inRange: {
+                                   color: [
+                                       '#171c61', '#4301fa', '#b901fd'
+                                   ],
+                                   opacity: 0.7
+                               }
+                           },
+                           series: [
+                               {
+                                   type: 'custom',
+                                   coordinateSystem: 'bmap',
+                                   renderItem: renderItem,
+                                   animation: false,
+                                   itemStyle: {
+                                       emphasis: {
+                                           color: 'yellow'
+                                       }
+                                   },
+                                   encode: {
+                                       tooltip: 2
+                                   },
+                                   data: data,
+                                   progressiveThreshold: 1000
+                               }
+                           ],
+                           bmap: {
+                               center: mapcenter,
+                               zoom: 14,
+                               roam: false,
+                               mapStyle: {
+                               }
+                           }
+                       };
+
+                       myChart.setOption(option, true);
+                       var bmap = myChart.getModel().getComponent('bmap').getBMap();
+                       bmap.setMapStyle({styleJson: myStyleJson ,});
+                       // bmap.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+                       myChart.on('click',function (params){
+                           console.log(params.data[3]);
+                           var xmlhttp;
+                           if(window.XMLHttpRequest){xmlhttp=new XMLHttpRequest();}
+                           else{xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");}
+                           xmlhttp.open("POST","/",true);
+                           xmlhttp.setRequestHeader("Content-type","application/json");
+                           xmlhttp.send(params.data[3]);
+                        })
+
+               },
+               error:function() {
+                   alert("请求失败");
+               }
+           });
+       });
+   </script>
+   </body>
+</html>
