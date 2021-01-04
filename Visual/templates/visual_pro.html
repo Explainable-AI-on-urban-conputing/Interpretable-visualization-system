@@ -84,16 +84,33 @@
    </style>
    <div class="container" id="con1">
        <div class="leftbox" id="left1" >
-           <input type="range" min="0" max="720" value="80" id="time"/>
-           <input type="text" id="txt" value="80" size="10"/>
        </div>
-       <div class="middlebox" id="mid1" style="width:79%;height: 100%;float: left" >
+       <div class="middlebox" id="mid1" style="width:79%;height: 100%;float: left">
+           <div style="width:30%;height: 100%;float: left;border: 1px solid #111111">
+               <input type="range" min="0" max="720" value="80" id="time"/>
+               <input type="text" id="txt" value="80" size="10"/>
+           </div>
+           <div style="width:30%;height: 100%;float: left;border: 1px solid #111111">
+               <p>Longtitude</p>
+               <p id="longtitude"></p>
+               <p>Latitude</p>
+               <p id="latitude"></p>
+           </div>
+           <div style="width:30%;height: 100%;float: right;border: 1px solid #111111">
+              <form method="post">
+                  <p>Value</p>
+                  <p id="value"></p>
+                 <input type="hidden" name="index" id="index"><br>
+                 <button type="submit">Compute</button>
+              </form>
+           </div>
        </div>
 {##}
 {#       <div class="rightbox" id="right1" ></div>#}
    </div>
    <div class="container" id="con2">
-       <div class="leftbox" id="left2" ></div>
+       <div class="leftbox" id="left2" >
+       </div>
        <div class="middlebox" id="mid2" style="width:60%;height: 100%;float: left" >
            <div class="controlbox" id="contr1" style="width:10%;height: 100%;float: left"></div>
            <div class="chart" id="grid" style="width: 78%;float: left"></div>
@@ -398,10 +415,6 @@
             var context = params.context;
             var lngIndex = api.value(0);
             var latIndex = api.value(1);
-            var coordLeftTop = [
-                +(latExtent[0] + lngIndex * cellSizeCoord[0]).toFixed(6),
-                +(lngExtent[0] + latIndex * cellSizeCoord[1]).toFixed(6)
-            ];
             var pointLeftTop = getCoord(params, api, lngIndex, latIndex);
             var pointRightBottom = getCoord(params, api, lngIndex + 1, latIndex + 1);
 
@@ -433,7 +446,9 @@
         }
 
    </script>
+
    <script>
+
        $.ajax({
            type:"get", //使用get方式
            url: "{{url_for('static',filename='data/Chengdu_data.json')}}", //json文件相对于这个HTML的路径
@@ -611,13 +626,16 @@
                        bmap.setMapStyle({styleJson: myStyleJson ,});
                        // bmap.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
                        myChart.on('click',function (params){
-                           console.log(params.data[3]);
-                           var xmlhttp;
-                           if(window.XMLHttpRequest){xmlhttp=new XMLHttpRequest();}
-                           else{xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");}
-                           xmlhttp.open("POST","/",true);
-                           xmlhttp.setRequestHeader("Content-type","application/json");
-                           xmlhttp.send(params.data[3]);
+                           index=params.data[3]
+                           document.getElementById("index").value=index;
+                           y = parseInt(index/36)
+                           x = index%36
+                           longtitude=(lngExtent[0] + x * cellSizeCoord[0]).toFixed(4)
+                           latitude=(latExtent[0] + y * cellSizeCoord[1]).toFixed(4)
+                           document.getElementById("longtitude").innerHTML=longtitude;
+                           document.getElementById("latitude").innerHTML=latitude;
+                           document.getElementById("value").innerHTML=params.data[2];
+                           console.log(params)
                         })
 
                },
