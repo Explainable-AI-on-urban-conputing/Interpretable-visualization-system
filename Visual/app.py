@@ -9,21 +9,32 @@ app = Flask(__name__)
 
 
 
-@app.route('/show',methods=['GET'])
+@app.route('/show', methods=['GET','POST'])
 def show():
+    if request.method == "POST":
+        index = request.form['index']
+        index = int(index)
+        x = int(index / 36)
+        y = index % 36
+        traj_grad_ = compute_traj_grad(x, y)
+        index=str(traj_grad_)
+        return redirect(url_for('show',
+                                index=index))
+    print("?")
     index = request.args.get('index')
-    return render_template("show.html",index=index)
+    return render_template("visual_pro_traj.html", index=index)
 
 @app.route('/',methods=['POST','GET'])
 def visual():
     if request.method == "POST":
+            print("??")
             index = request.form['index']
             index=int(index)
             x = int(index/36)
             y = index % 36
             traj_grad_ = compute_traj_grad(x, y)
             return redirect(url_for('show',
-                                    index=index))
+                                     index=traj_grad_))
     return render_template("visual_pro.html")
 
 def compute_traj_grad(x,y):
