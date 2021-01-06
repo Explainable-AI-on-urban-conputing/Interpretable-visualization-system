@@ -1,78 +1,27 @@
 <!DOCTYPE html>
-<html style="height: 100%">
-   <head>
-       <meta charset="utf-8">
-       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/echarts.min.js"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl@1/dist/echarts-gl.min.js"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat@1/dist/ecStat.min.js"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/extension/dataTool.min.js"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/map/js/china.js"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/map/js/world.js"></script>
-<!--       <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=xfhhaTThl11qYVrqLZii6w8qE5ggnhrY&__ec_v__=20190126"></script>-->
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@4/dist/extension/bmap.min.js"></script>
        <meta name="viewport" content="width=device-width, initial-scale=1" />
-<!--       <script src="lib/esl.js"></script>-->
-<!--       <script src="lib/config.js"></script>-->
-<!--       <script src="lib/testHelper.js"></script>-->
-       <script src="{{url_for('static',filename='js/jquery.min.js')}}"></script>
-       <script src="{{url_for('static',filename='js/bundle_copy.js')}}"></script>
-
-       <script src="http://api.map.baidu.com/api?v=2.0&ak=KOmVjPVUAey1G2E8zNhPiuQ6QiEmAwZu"></script>
-       <link rel="stylesheet" href="{{ url_for('static',filename='css/reset.css') }}" />
-       <link rel="stylesheet" href="{{ url_for('static',filename='css/wodry.css') }}" />
-       <link rel="stylesheet" href="{{ url_for('static',filename='css/index.css') }}" />
-       <link rel="stylesheet" href="{{ url_for('static',filename='css/public.css') }}" />
-   </head>
-   <body  bgcolor="#d0d0d0">
-   <style>
-       h1 {
+    <style>
+        :root{
+            font-size:100px
+        }
+         h1 {
            line-height: 60px;
            height: 60px;
            background: #ddd;
            text-align: center;
            font-weight: bold;
-           font-size: 14px;
+           font-size: 25px;
        }
-       #grid {
-           height: 100%;
-       }
-       #pens {
-           position: fixed;
-           right: 40%;
-           top: 20%;
-           z-index: 9999999;
-           border: 1px solid #aaa;
-           text-align: center;
-       }
-       #pens div {
-           width: 30px;
-           height: 10px;
-           cursor: pointer;
-       }
-       #con1{
-           height:18% ;
-           float: top;
-       }
-       #con2{
-           height:81% ;
-           float: bottom;
-       }
-       .leftbox{
-           height: 100%;
-           width: 25%;
-           float: left;
-       }
-       .middlebox{
-           height: 100%;
-           width: 40%;
-           float: left;
-       }
-       .rightbox{
-           height: 100%;
-           width: 39%;
-           float: left;
-       }
-       .topbox{
+        .topbox{
            height:20%
        }
        .BMap_cpyCtrl {
@@ -107,55 +56,85 @@
                 z-index: 1002;
                 overflow: auto;
        }
-   </style>
-   <div class="container" id="con1">
-       <div class="leftbox" id="left1" style="width:35%;height: 100%;float: left" >
-           <img src="{{url_for('static',filename='images/sustech.png')}}"  alt="Sustech" />
-       </div>
-       <div class="middlebox" id="mid1" style="width:50%;height: 100%;float: left">
-           <div class="header">
-                <div class="header-left fl" id="time"></div>
-                <div class="header-center fl">
-                    <div class="header-title">
-                        Traffic Flow Interpretation
-                    </div>
-                <div class="header-img"></div>
-                </div>
-                <div class="header-right fl"></div>
-                <div class="header-bottom fl"></div>
-           </div>
-       </div>
+     </style>
+    <meta charset="UTF-8">
+    <title>数据展示</title>
+    <script src="http://api.map.baidu.com/api?v=2.0&ak=KOmVjPVUAey1G2E8zNhPiuQ6QiEmAwZu"></script>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/wodry.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/index.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/public.css') }}" /
+    <script src="{{url_for('static',filename='js/jquery.min.js') }}"></script>
+    <script src="{{url_for('static',filename='js/jquery.min.js') }}">
+        $(document).ready(function () {
+            var whei = $(window).width()
+            $("html").css({ fontSize: whei / 22 });
+            $(window).resize(function () {
+                var whei = $(window).width();
+                $("html").css({ fontSize: whei / 22 })
+            });
+        });
+    </script>
+</head>
+<body>
 
-   </div>
-   <div class="container" id="con2">
-       <div class="leftbox" id="left2" style="width:35%;height: 100%;float: left">
-           <div id="up_box" style="height: 50%;float: top">
-               <div style="width:15%;float:left;border: 1px solid #ffffff;" ></div>
-               <div style="width:50%;float:left">
-                   <input type="range" min="0" max="720" value="0" id="time"/>
-                   <p><font size="5" face="arial" color="red" id="time_show">2016/11/01 00:00 </font></p>
+<div class="main">
+    <div class="header">
+        <div class="header-left fl" id="time"></div>
+        <div class="header-center fl">
+            <div class="header-title">
+                Traffic flow Interpretation
+            </div>
+            <div class="header-img"></div>
+        </div>
+        <div class="header-right fl">
+            <img src="{{url_for('static',filename='images/sustech.png')}}"  alt="Sustech" />
+        </div>
+        <div class="header-bottom fl"></div>
+
+    </div>
+
+    <div class="center">
+        <div class="center-left fl">
+            <div class="left-top rightTop border">
+                <!--<h1 id="ceshi">数据可视化</h1>-->
+{#                <div class="title">基本信息</div>#}
+{#                <div class="top-list">#}
+                     <input type="range" min="0" max="720" value="0" id="time_line"/>
+                    <p><font size="5" face="arial" color="red" id="time_show">2016/11/01 00:00 </font></p>
                    <p><font size="5" face="arial" color="red">Longtitude: </font>
                        <font size="5" face="arial" color="red" id="longtitude"> </font></p>
                    <p><font size="5" face="arial" color="red">Latitude: </font>
                        <font size="5" face="arial" color="red" id="latitude"> </font></p>
                     <p><font size="5" face="arial" color="red">Value:</font>
                        <font size="5" face="arial" color="red" id="value"> </font></p>
-{#                   <p>Shape弹出层：<a href = "JavaScript:void(0)" onclick = "openDialog()">请点这里</a></p>#}
                    <button href = "JavaScript:void(0)" onclick = "openDialog()" type="button" >Shape弹出层</button>
                    <input type="hidden" name="index" id="index"><br>
                    <button type="submit">Compute</button>
-               </div>
-           </div>
-           <div id="down_box" style="height: 48%;float: top"></div>
-       </div>
-       <div class="middlebox" id="mid2" style="width:63%;height: 100%;float: left" >
-           <div class="controlbox" id="contr1" style="width:10%;height: 100%;float: left"></div>
-           <div class="chart" id="grid" style="width: 78%;float: left"></div>
-           <div class="controlbox" id="contr2" style="width:10%;height: 100%;float: left"></div>
-       </div>
-{#       <div class="rightbox" id="right2" style="width:14%;height: 100%;float: left">#}
-{#       </div>#}
-   </div>
+{#                    <p>当你征服一座山峰时，它已经在你脚下了，你必须再找一座山峰去征服，否则，你只有下山，走下坡路了</p>#}
+{#                    <ul>#}
+{#                        <li>成交额：4250万</li>#}
+{#                        <li>成交量：3545万件</li>#}
+{#                        <li>在线总数：1254万</li>#}
+{#                        <li>总包裹量：7854万</li>#}
+{#                        <li>在线商家：68万</li>#}
+{#                        <li>已发件：154万</li>#}
+{#                    </ul>#}
+{#                </div>#}
+
+            </div>
+            <div class="left-cen rightTop border" id="down_box">
+                <div class="title">包裹量排名</div>
+            </div>
+        </div>
+        <div class="center-cen fl" >
+            <div class="cen-top rightTop border" id="grid">
+
+                <div class="top-bottom">
+                    <div id="map" class="allnav" style="height: 4.4rem"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="light" class="white_content">
             <table>
@@ -166,8 +145,46 @@
     </div>
    <div id="fade" class="black_overlay"></div>
 
+</div>
 
-   <script>
+       <script src="{{url_for('static',filename='js/bundle_copy.js')}}"></script>
+       <script src="{{url_for('static',filename='js/fontscroll.js')}}"></script>
+       <script src="{{url_for('static',filename='js/wodry.min.js')}}"></script>
+       <script src="{{url_for('static',filename='js/jquery.min.js')}}"></script>
+
+<script>
+    function getTime() {
+        var myDate = new Date();
+        var myYear = myDate.getFullYear(); //获取完整的年份(4位,1970-????)
+        var myMonth = myDate.getMonth() + 1; //获取当前月份(0-11,0代表1月)
+        var myToday = myDate.getDate(); //获取当前日(1-31)
+        var myDay = myDate.getDay(); //获取当前星期X(0-6,0代表星期天)
+        var myHour = myDate.getHours(); //获取当前小时数(0-23)
+        var myMinute = myDate.getMinutes(); //获取当前分钟数(0-59)
+        var mySecond = myDate.getSeconds(); //获取当前秒数(0-59)
+        var week = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+        var nowTime;
+        nowTime = myYear + '-' + fillZero(myMonth) + '-' + fillZero(myToday) + '&nbsp;&nbsp;' + fillZero(myHour) + ':' + fillZero(myMinute) + ':' + fillZero(mySecond) + '&nbsp;&nbsp;' + week[myDay] + '&nbsp;&nbsp;';
+
+        $('#time').html(nowTime);
+    };
+        function fillZero(str){
+            var realNum;
+                if(str<10){
+                    realNum	= '0'+str;
+                }else{
+                    realNum	= str;
+                }
+                return realNum;
+            }
+          setInterval(getTime,1000);
+
+
+</script>
+
+
+
+<script>
        var myStyleJson=[{
            "featureType": "background",
            "elementType": "geometry",
@@ -445,7 +462,7 @@
                "visibility": "off"
            }
        }];
-   </script>
+</script>
    <script>
         var dom = document.getElementById("grid");
         var myChart = echarts.init(dom);
@@ -588,14 +605,14 @@
        });
    </script>
    <script>
-       $("#time").on('input propertychange', () => {
+       $("#time_line").on('input propertychange', () => {
 
            $.ajax({
                type:"get", //使用get方式
                url: "{{url_for('static',filename='images/Chengdu_data.json')}}", //json文件相对于这个HTML的路径
                dataType:"json",
                success:function(json) {
-                   var timespot=document.getElementById("time").value;
+                   var timespot=document.getElementById("time_line").value;
                    {#var t=document.getElementById("txt");#}
                    {#t.value=timespot;#}
                    var day = parseInt(timespot/144)+1
@@ -700,10 +717,13 @@
                            console.log(data_index)
                            console.log(data_line)
                            option_line = {
-                                xAxis: {
+                                xAxis: [{
                                     type: 'category',
-                                    data: data_index
-                                },
+                                    data: data_index,
+                                    nameTextStyle: {
+                                        color: "rgba(150, 46, 46, 1)"
+                                    }
+                                }],
                                 yAxis: {
                                     type: 'value'
                                 },
